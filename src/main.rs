@@ -31,8 +31,8 @@ fn ray_hit_color(r: &Ray, world: &World, max_light_bounce_num: i32) -> Vec3 {
 }
 
 fn generate_results(world: &World, result_ppm_path : String) {
-    let width = 320;
-    let height = 240;
+    let width = 640;
+    let height = 480;
     let aspect_ratio = width as f32 / height as f32;
     let rays_per_pixel = 100;
     let max_light_bounce_num = 5;
@@ -96,18 +96,16 @@ fn main() {
 
     world.generate_scene_one( Rc::new(Specular::new(Vec3::new(1.0, 1.0, 1.0))) );
     generate_results(&world, "1specular.png".to_string());
-
-    /*
+    
+    /* 
     let diffuse_color = Vec3::new(random::<f32>(), random::<f32>(), random::<f32>()) * Vec3::new(random::<f32>(), random::<f32>(), random::<f32>());
     world.generate_scene_multi(Rc::new(Diffuse::new(diffuse_color)));
     generate_results(&world, "mdiffuse.png".to_string());
-
-    let specular_color = Vec3::new(random_range(0.3..1.0), random_range(0.3..1.0), random_range(0.3..1.0));
-    world.generate_scene_multi(Rc::new(Specular::new(specular_color)));
-    generate_results(&world, "mspecular.png".to_string());
-
-
-    world.generate_scene_all();
-    generate_results(&world, "all.png".to_string());
     */
+
+    //world.generate_scene_multi(Rc::new(Specular::new(Vec3::new(random_range(0.3..1.0), random_range(0.3..1.0), random_range(0.3..1.0)))));
+    //generate_results(&world, "mspecular.png".to_string());
+
+    //world.generate_scene_all();
+    //generate_results(&world, "all.png".to_string());
 }   

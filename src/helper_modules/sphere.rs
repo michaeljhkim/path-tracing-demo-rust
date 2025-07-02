@@ -1,15 +1,3 @@
-/*
-class HitResult {
-public:
-    HitResult() { m_is_hit = false; };
-    bool m_is_hit;
-    Vec3D m_hit_pos;
-    Vec3D m_hit_normal;
-    shared_ptr<Material> m_hit_material;
-    float m_t;
-};
-*/
-
 use std::rc::Rc;
 
 use glam::Vec3;
@@ -53,31 +41,42 @@ impl Sphere {
     }
 
     pub fn hit(&self, ray: &Ray, min_t: f32, max_t: f32) -> HitResult {
-        let mut hit_result: HitResult = HitResult::default();
+        let mut hit_result = HitResult::default();
 
-        let oc: Vec3 = ray.m_origin - self.m_center;
-        let doc: f32 = ray.m_direction.dot(oc);
-        let discriminant: f32 = (doc * doc) - ray.m_direction.dot(ray.m_direction) * (oc.dot(oc) - self.m_radius * self.m_radius);
+        let oc = ray.m_origin - self.m_center;
 
-        if discriminant > 0.0 {
-            let sqrt_discriminant: f32 = discriminant.sqrt();
-            
-            let mut ray_time: f32 = -doc - sqrt_discriminant;
-            if ray_time < min_t || ray_time > max_t {
-                ray_time = -doc + sqrt_discriminant;
-            }
+        // Quadratic coefficients
+        let a = ray.m_direction.dot(ray.m_direction);
+        let b = 2.0 * ray.m_direction.dot(oc);
+        let c = oc.dot(oc) - self.m_radius * self.m_radius;
 
-            if ray_time >= min_t && ray_time <= max_t {
-                hit_result.m_is_hit = true;
-                hit_result.m_t = ray_time;
-                hit_result.m_hit_pos = ray.at(ray_time);
-                hit_result.m_hit_normal = (hit_result.m_hit_pos - self.m_center) / self.m_radius;
-                hit_result.m_hit_material = self.m_pmaterial.clone();   // only clones the reference
-                return hit_result;
-            }
+        let discriminant = b * b - 4.0 * a * c;
+
+        if discriminant < 0.0 {
+            return hit_result; // no hit
         }
 
-        hit_result.m_is_hit = false;
+        let sqrt_d = discriminant.sqrt();
+        let t1 = (-b - sqrt_d) / (2.0 * a);
+        let t2 = (-b + sqrt_d) / (2.0 * a);
+
+        let t_hit = if t1 >= min_t && t1 <= max_t {
+            t1
+        } else if t2 >= min_t && t2 <= max_t {
+            t2
+        } else {
+            return hit_result; // both outside valid range
+        };
+
+        let hit_pos = ray.at(t_hit);
+        let normal = (hit_pos - self.m_center) / self.m_radius;
+
+        hit_result.m_is_hit = true;
+        hit_result.m_t = t_hit;
+        hit_result.m_hit_pos = hit_pos;
+        hit_result.m_hit_normal = normal;
+        hit_result.m_hit_material = self.m_pmaterial.clone(); // clone Rc ref
+
         return hit_result;
     }
 }
