@@ -9,8 +9,8 @@ use super::sphere::{HitResult};
 
 
 pub struct ReflectResult {
-    m_ray: Ray,
-    m_color: Vec3
+    pub m_ray: Ray,
+    pub m_color: Vec3
 }
 
 impl Default for ReflectResult {
@@ -29,7 +29,7 @@ pub struct Material {
  */
 
 pub trait Material {
-    fn reflect(&self, ray: Ray, hit: HitResult) -> ReflectResult;
+    fn reflect(&self, ray: &Ray, hit: &HitResult) -> ReflectResult;
 }
 
 pub struct Diffuse {
@@ -53,13 +53,13 @@ impl Default for Diffuse {
 }
 
 impl Material for Diffuse {
-    fn reflect(&self, ray: Ray, hit: HitResult) -> ReflectResult {
+    fn reflect(&self, ray: &Ray, hit: &HitResult) -> ReflectResult {
         let mut res: ReflectResult = ReflectResult::default();
-        let u1: f32 = random::<f32>();
-        let u2: f32 = random::<f32>();
+        let u1 = random::<f32>();
+        let u2 = random::<f32>();
         
-        let theta: f32 = (1.0-u1).sqrt().acos();
-        let phi: f32 = 2.0 * PI * u2;
+        let theta = ((1.0 - u1).sqrt()).acos();
+        let phi = 2.0 * PI * u2;
 
         let mut random_direction: Vec3 = Vec3::new(
             theta.sin() * phi.cos(), 
@@ -71,7 +71,7 @@ impl Material for Diffuse {
             random_direction *= -1.0;
         }
 
-        res.m_ray = Ray::new(hit.m_hit_pos, random_direction);
+        res.m_ray = Ray::new(&hit.m_hit_pos, &random_direction);
         res.m_color = self.m_color;
 
         return res;
@@ -101,7 +101,7 @@ impl Default for Specular {
 }
 
 impl Material for Specular {
-    fn reflect(&self, ray: Ray, hit: HitResult) -> ReflectResult {
+    fn reflect(&self, ray: &Ray, hit: &HitResult) -> ReflectResult {
         let mut res: ReflectResult = ReflectResult::default();
         let mut incoming_dir: Vec3 = ray.direction();
         let magnitude: f32 = incoming_dir.length();
@@ -112,7 +112,7 @@ impl Material for Specular {
 
         let reflected_dir: Vec3 = incoming_dir - 2.0 * incoming_dir.dot(hit.m_hit_normal) * hit.m_hit_normal;
 
-        res.m_ray = Ray::new(hit.m_hit_pos, reflected_dir);
+        res.m_ray = Ray::new(&hit.m_hit_pos, &reflected_dir);
         res.m_color = self.m_color;
 
         return res;
