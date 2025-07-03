@@ -103,21 +103,19 @@ fn generate_results(world: &World, result_ppm_path : String) {
 fn main() {
     let mut world: World = World::default();
     
-    /*
     world.generate_scene_one( Arc::new(Diffuse::new(Vec3::new(0.3, 0.4, 0.5))) );
-    generate_results(&world, "1mdiffuse.png".to_string());
+    generate_results(&world, "images/1mdiffuse.png".to_string());
 
     world.generate_scene_one( Arc::new(Specular::new(Vec3::new(1.0, 1.0, 1.0))) );
-    generate_results(&world, "1specular.png".to_string());
+    generate_results(&world, "images/1specular.png".to_string());
     
     let diffuse_color = Vec3::new(random::<f32>(), random::<f32>(), random::<f32>()) * Vec3::new(random::<f32>(), random::<f32>(), random::<f32>());
     world.generate_scene_multi(Arc::new(Diffuse::new(diffuse_color)));
-    generate_results(&world, "mdiffuse.png".to_string());
+    generate_results(&world, "images/mdiffuse.png".to_string());
 
     world.generate_scene_multi(Arc::new(Specular::new(Vec3::new(random_range(0.3..1.0), random_range(0.3..1.0), random_range(0.3..1.0)))));
-    generate_results(&world, "mspecular.png".to_string());
-    */
+    generate_results(&world, "images/mspecular.png".to_string());
 
     world.generate_scene_all();
-    generate_results(&world, "all.png".to_string());
+    generate_results(&world, "images/all.png".to_string());
 }   
