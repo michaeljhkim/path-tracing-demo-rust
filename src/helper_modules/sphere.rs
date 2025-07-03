@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 use glam::Vec3;
 use super::material::{Material, Diffuse};
@@ -8,7 +8,7 @@ pub struct HitResult {
     pub m_is_hit: bool,
     pub m_hit_pos: Vec3,
     pub m_hit_normal: Vec3,
-    pub m_hit_material: Rc<dyn Material>,
+    pub m_hit_material: Arc<dyn Material>,
     pub m_t: f32
 }
 
@@ -18,7 +18,7 @@ impl Default for HitResult {
             m_is_hit: false,
             m_hit_pos: Vec3::ZERO,
             m_hit_normal: Vec3::ZERO,
-            m_hit_material: Rc::new(Diffuse::default()),
+            m_hit_material: Arc::new(Diffuse::default()),
             m_t: 0.0
         };
     }
@@ -28,11 +28,11 @@ impl Default for HitResult {
 pub struct Sphere {
     pub m_center: Vec3,
     pub m_radius: f32,
-    pub m_pmaterial: Rc<dyn Material>,
+    pub m_pmaterial: Arc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Vec3, r: f32, m: Rc<dyn Material>) -> Self {
+    pub fn new(center: Vec3, r: f32, m: Arc<dyn Material>) -> Self {
         return Self { 
             m_center: center,
             m_radius: r,

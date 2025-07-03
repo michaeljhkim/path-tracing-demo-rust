@@ -14,13 +14,15 @@ impl Ray {
         };
     }
 
+    /*
     pub fn origin(&self) -> Vec3 {
         return self.m_origin;
     }
+    */
 
     pub fn direction(&self) -> Vec3 {
         return self.m_direction;
-    }
+    } 
 
     pub fn at(&self, t: f32) -> Vec3 {
         return self.m_origin + t * self.m_direction;

@@ -28,7 +28,7 @@ pub struct Material {
 }
  */
 
-pub trait Material {
+pub trait Material: Send + Sync {
     fn reflect(&self, ray: &Ray, hit: &HitResult) -> ReflectResult;
 }
 

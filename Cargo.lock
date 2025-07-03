@@ -568,6 +568,7 @@ dependencies = [
  "glam",
  "image",
  "rand 0.9.1",
+ "rayon",
 ]
 
 [[package]]

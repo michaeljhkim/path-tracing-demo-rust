@@ -1,6 +1,6 @@
 use glam::Vec3;
 use rand::{random, random_range};
-use std::{rc::Rc};
+use std::sync::Arc;
 
 use crate::helper_modules::material::Specular;
 
@@ -9,7 +9,7 @@ use super::ray::{Ray};
 use super::sphere::{HitResult, Sphere};
 
 pub struct World {
-    m_spheres: Vec<Rc<Sphere>>,
+    m_spheres: Vec<Arc<Sphere>>,
 }
 
 impl World {
@@ -30,18 +30,20 @@ impl World {
     }
 
     pub fn add_scene_floor(&mut self) {
-        let material_floor: Rc<Diffuse> = Rc::new(Diffuse::new(Vec3::new(0.5, 0.5, 0.5)));
+        let material_floor: Arc<Diffuse> = Arc::new(Diffuse::new(Vec3::new(0.5, 0.5, 0.5)));
         self.m_spheres.push(
-            Rc::new(Sphere::new(Vec3::new(0.0, -2000.0, 0.0), 2000.0, material_floor))
+            Arc::new(Sphere::new(Vec3::new(0.0, -2000.0, 0.0), 2000.0, material_floor))
         );
     }
 
-    pub fn generate_spheres(&mut self,
+    pub fn generate_spheres<F>(&mut self,
         row_start: i32, row_end: i32,
         col_start: i32, col_end: i32,
         spacing: f32, min_radius: f32, max_radius: f32,
-        material_generator: Rc<dyn Material>
-    ) {
+        material_generator: F) 
+    where
+        F: Fn() -> Arc<dyn Material>,
+    {
         for row in row_start..row_end {
             for col in col_start..col_end {
                 let radius: f32 = random_range(min_radius..=max_radius);
@@ -51,31 +53,35 @@ impl World {
                     (spacing as f32) * (col as f32) + 0.5 * random::<f32>(),
                 );
                 self.m_spheres.push(
-                    Rc::new(Sphere::new(center, radius as f32, material_generator.clone()))
+                    Arc::new(Sphere::new(center, radius as f32, material_generator()))
                 );
             }
         }
     }
 
-    pub fn generate_scene_one(&mut self, sphere_material: Rc<dyn Material>) {
+    pub fn generate_scene_one(&mut self, sphere_material: Arc<dyn Material>) {
         self.m_spheres.clear();
 
         self.m_spheres.push(
-            Rc::new(Sphere::new(Vec3::new(4.0, 1.0, 0.0), 1.0, sphere_material))
+            Arc::new(Sphere::new(Vec3::new(4.0, 1.0, 0.0), 1.0, sphere_material))
         );
         self.add_scene_floor();
     }
 
-    pub fn generate_scene_multi(&mut self, sphere_material: Rc<dyn Material>) {
+    pub fn generate_scene_multi(&mut self, sphere_material: Arc<dyn Material>) {
         self.m_spheres.clear();
-        self.generate_spheres(-3, 3, -3, 3, 3.0, 0.2, 0.8, sphere_material);
+        let closure_annotated = || -> Arc<dyn Material> {  
+            sphere_material.clone()
+        };
+
+        self.generate_spheres(-3, 3, -3, 3, 3.0, 0.2, 0.8, closure_annotated);
         self.add_scene_floor();
     }
 
     pub fn generate_scene_all(&mut self) {
         self.m_spheres.clear();
 
-        let closure_annotated = || -> Rc<dyn Material> { 
+        let closure_annotated = || -> Arc<dyn Material> { 
             let is_diffuse: bool = random::<f32>() <= 0.6;
             let color: Vec3 = if is_diffuse { 
                     Vec3::new(random::<f32>(), random::<f32>(), random::<f32>()) * Vec3::new(random::<f32>(), random::<f32>(), random::<f32>())
@@ -84,14 +90,14 @@ impl World {
                 };
                 
             if is_diffuse {
-                Rc::new(Diffuse::new(color))
+                Arc::new(Diffuse::new(color))
             }
             else {
-                Rc::new(Specular::new(color))
+                Arc::new(Specular::new(color))
             }
         };
 
-        self.generate_spheres(-3, 3, -3, 3, 3.0, 0.2, 0.8, closure_annotated());
+        self.generate_spheres(-5, 10, -5, 5, 1.5, 0.2, 0.5, closure_annotated);
         self.add_scene_floor();
     }
 
