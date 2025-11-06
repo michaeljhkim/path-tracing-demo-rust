@@ -1,7 +1,8 @@
 # PathTraceImages-RUST
 
-Rust-based recreation of PT-ImGen.
-- Fixed reflection calculations.
+Rust-based path-tracing algorithm for producing standard resolution images.
+- CPU only for highest accuracy
+- Multi-threaded due to large amount of computations.
 
 Five images are generated for Diffusion and Specular lighting.
 
