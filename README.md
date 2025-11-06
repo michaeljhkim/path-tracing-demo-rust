@@ -1,6 +1,6 @@
 # PathTraceImages-RUST
 
-Rust-based path-tracing algorithm for producing standard resolution images.
+Rust-based path-tracing algorithm for producing standard resolution images. Remake of C++ project.
 - CPU only for highest accuracy
 - Multi-threaded due to large amount of computations.
 
